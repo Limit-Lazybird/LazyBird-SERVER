@@ -1,0 +1,223 @@
+구글 토큰 발급 사이트
+https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/analytics.readonly&access_type=offline&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri=http://localhost:3000/login/oauth/google&response_type=code&client_id=184873278675-i9jmrcql33j40mn2rcaq8sf5jl2tvje2.apps.googleusercontent.com
+
+카카오 토큰 발급 사이트
+https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=8b4c1c2b5af1d291c9268ce1bc634957&redirect_uri=http://localhost:3000/login/oauth/kakao
+
+
+
+ya29.a0ARrdaM-K8GJhRpKjddtBwJAiirBNms8VRkUar9y9f2tgMkOGPMfxe-pdfchv39M1CVQLR7ZyXMQVPKFgLFrojPB8EJWva-Uwn0YmFEbu5zCbeBPEg5CdtmOq7wK_9EKbTxBggwVzok-qibk98TFg7BgNF6yM
+
+
+
+///////////////// 토큰 발급 소스 //////////////
+//node_modules 에 있는 express 모듈 불러오기
+const express = require("express");
+
+const app = express();
+app.use(express.urlencoded({extended:true}));
+app.use(express.json());
+
+const fetch = require('cross-fetch');
+const winston = require('winston'); //log library
+const logger = winston.createLogger();
+const qs = require('qs');
+const router = express.Router();
+
+//http://localhost:3000/login/oauth/google
+//client id : 184873278675-i9jmrcql33j40mn2rcaq8sf5jl2tvje2.apps.googleusercontent.com
+//secret key : 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
+
+// class Apple {
+//     constructor(code){
+//         this.url = 
+//         this.clientID = 
+//         this.redirectUri = 'http://15.165.76.75:3000/login/oauth/apple';
+//         this.clientSecret = 
+//         this.code = 
+
+//         this.userInfoUrl = 
+//     }
+// }
+class  Apple  {
+    constructor(code){
+        this.url = 'https://www.googleapis.com/oauth2/v4/token';
+        this.clientID = '184873278675-i9jmrcql33j40mn2rcaq8sf5jl2tvje2.apps.googleusercontent.com';
+        this.redirectUri = 'http://localhost:3000/login/oauth/google';
+        this.clientSecret = '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';
+        this.code = code;
+
+        this.userInfoUrl = 'https://www.googleapis.com/oauth2/v1/tokeninfo';
+    }
+}
+
+class Google {
+    constructor(code){
+        this.url = 'https://www.googleapis.com/oauth2/v4/token';
+        this.clientID = '184873278675-i9jmrcql33j40mn2rcaq8sf5jl2tvje2.apps.googleusercontent.com';
+        this.redirectUri = 'http://localhost:3000/login/oauth/google';
+        this.clientSecret = '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';
+        this.code = code;
+
+        this.userInfoUrl = 'https://www.googleapis.com/oauth2/v1/tokeninfo';
+    }
+}
+
+/* AccessToken 발급 셋팅 */
+class Kakao {
+    constructor(code) {
+        this.url = 'https://kauth.kakao.com/oauth/token';
+        this.clientID = '8b4c1c2b5af1d291c9268ce1bc634957';
+        this.clientSecret = '';
+        this.redirectUri = 'http://localhost:3000/login/oauth/kakao';
+        this.code = code;
+
+        // userInfo
+        this.userInfoUrl = 'https://kapi.kakao.com/v2/user/me';
+        console.log("카카오 클래스 생성");
+    }
+}
+
+//웹에서 구글 로그인 페이지(로그인테스트용)
+
+router.get('/google', function(req, res){
+
+
+    var s_html = '<html>';
+
+    s_html += '<head></head>';
+
+    s_html += '<body>';
+
+    s_html += '<a href="https://accounts.google.com/o/oauth2/auth?'+
+
+        'client_id='+'184873278675-i9jmrcql33j40mn2rcaq8sf5jl2tvje2.apps.googleusercontent.com'+
+
+        '&redirect_uri='+'http://localhost:3000/login/oauth/google'+
+
+        '&scope=https://www.googleapis.com/auth/plus.login'+
+
+        '&response_type=code">로그인</a>';
+
+    s_html += "</body>";
+
+    s_html += "</html>";
+
+
+
+    res.send(s_html);
+
+});
+
+function onSignIn(googleUser) {
+    var id_token = googleUser.getAuthResponse().id_token;
+}
+
+
+//access token 발급
+const getAccessToken = async (options) => {
+    try {
+            return await fetch(options.url, {
+                method: 'POST',
+                headers: {
+                    'content-type':'application/x-www-form-urlencoded;charset=utf-8'
+                },
+                body: qs.stringify({
+                    grant_type: 'authorization_code',       //특정 스트링
+                    client_id: options.clientID,
+                    client_secret: options.clientSecret,
+                    redirectUri: options.redirectUri,
+                    code: options.code
+                }),
+            }).then(res => res.json());
+    } catch(e) {
+        logger.info("error", e);
+    }
+};
+
+//토큰 발급 성공하면 유저 정보 가져옴
+const getUserInfo = async (url, access_token) => {
+    try {
+        return await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+                'Authorization': `Bearer ${access_token}`
+            }
+            // body: qs.stringify({
+            //     'id_token' :  id_token
+            // }),
+        }).then(res => res.json());
+    }catch(e) {
+        logger.info("error", e);
+    }
+};
+
+//http://localhost:3000/oauth/kakao
+
+// app.post("/oauth/kakao", (req, res) => {
+//     res.send('토큰발급완료');
+// });
+
+/*
+ -- userInfo
+{"id":1961221611,"connected_at":"2021-10-23T09:45:01Z","properties":{"nickname":"."},"kakao_account":{"profile_nickname_needs_agreement":false,"profile":{"nickname":"."},"has_email":true,"email_needs_agreement":true,"has_age_range":true,"age_range_needs_agreement":false,"age_range":"20~29","has_gender":true,"gender_needs_agreement":false,"gender":"male"}}
+*/
+
+
+const getOption = (coperation, code)=> {
+    switch(coperation) {
+        case 'kakao':
+            return new Kakao(code);
+        break;
+        case 'google':
+            return new Google(code);
+        break;
+        case 'apple':
+            // return new apple(code); >> 따로 구현 해야할까...?
+        break;
+    }
+}
+
+// router.get("/oauth/google", (req, res) => {
+//     var profile = res.getBasicProfile();
+//     console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+//     console.log('Name: ' + profile.getName());
+//     console.log('Image URL: ' + profile.getImageUrl());
+//     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+//     // var id_token = res.getAuthResponse().id_token;
+//     // res.send(id_token);
+// });
+
+router.get(`/oauth/:coperation`, async (req, res) => {
+    const coperation = req.params.coperation;
+    const code = req.param('code');
+    const options = getOption(coperation, code);
+    const token = await getAccessToken(options);
+    res.send(token.access_token);
+    // const userInfo = await getUserInfo(options.userInfoUrl, token.access_token);
+
+    // Redirect Frot Server (쿠키, 세션, local_store 중에 로그인을 유지한다.)
+    // DataBase or 쿠키 reflesh Token 저장 방법 모색
+    // res.send(userInfo);
+
+    //114722202319801609336
+    // res.send(userInfo.user_id);
+
+    // const userInfoReq = {
+    //     userId: userInfo.user_id,
+    //     // email: userInfo.email, >> email은 클라이언트에서 보내주는 변수명에 따라 달라짐.
+    //     email: 'wldnjs08@gmail.com'
+    // };
+    
+    // //토큰 생성
+    // const jwtToken = await jwt.sign(userInfoReq);
+
+    // //토큰 유효성 체크
+    // const decode =  await jwt.verify(jwtToken);
+
+    // res.send(decode);
+});
+
+
+module.exports = router;

@@ -1,0 +1,106 @@
+2021/11/06
+
+해당 문서는 Limit-LazyBird 프로젝트의 서버 소스 가이드 입니다.
+소스는 Node.js REST 서버로서 구축되었으며, Amazon EC2(Ubuntu) 위에서 작동하는 것으로 설계되었습니다.
+
+0. 프로그램 정보
+    - https 사용함을 기본으로 한다
+    - 공인 IP : 13.124.19.14
+    - DNS : limit-lazybird.com
+
+1. 아키텍쳐
+    - 가장 먼저 실행되는 파일은 app.js 이다.
+    - app.js 내에서 path를 지정해주고, 각 path 별 로직은 해당 파일내에 정의
+    - /modules/db_service : 실행할 DB 함수를 호출
+    - /modules/db_controller  : DB 쿼리문 함수가 정의
+    ex) 서비스 호출 -> db_service 호출 ->  db_controller 호출
+
+2. 파일 및 폴더 구성
+    - /conf/  : db, 애플로그인, secretkey 등 config 파일
+    - /modules/ : 공통으로 사용할 서비스 모듈 정의(db_service, lazybirdJwt 등)
+    - /routes/ : 각 서비스별 rest api 정의
+    - constant : 고정된 상수(변수) 정의
+    - err : 오류 코드 및 메세지 정의
+
+* 설치 모듈
+    - 애플로그인 : apple-auth
+    - 비동기처리 : cross-fetch
+    - 로깅 : winston
+    - 쿼리스트링 포맷 : qs
+    - JWT 생성 : jsonwebtoken
+    - https 설정 : nginx 
+    - DB 설정 : mysql
+
+
+
+
+* node.js 백그라운드 자동 실행을 위해 'PM2'를 사용하였고 해당 사용법을 아래에 작성하였습니다.
+    1. pm2 모듈 설치
+        - sudo npm install pm2 -g
+    2. ecosystem.config.js 파일을 생성
+        - pm2 ecosystem
+    3. ecosystem.config.js 파일에 설정
+        - 해당 파일을 생성하면 기본적으로 설정 되어 있는 값
+        ---------------------------------------
+        module.exports = {
+            apps : [{
+                script: 'index.js',
+                watch: '.'
+            }, {
+                script: './service-worker/',
+                watch: ['./service-worker']
+            }],
+
+            deploy : {
+                production : {
+                user : 'SSH_USERNAME',
+                host : 'SSH_HOSTMACHINE',
+                ref  : 'origin/master',
+                repo : 'GIT_REPOSITORY',
+                path : 'DESTINATION_PATH',
+                'pre-deploy-local': '',
+                'post-deploy' : 'npm install && pm2 reload ecosystem.config.js --env production',
+                'pre-setup': ''
+                }
+            }
+        };
+        ---------------------------------------
+        - apps에서 사용하는 옵션들
+        1. name : 실행 모드 이름
+        2. script : 실행되는 파일
+        3. instances : 프로세스 수
+        4. autorestart : 재시작 on/off
+        5. watch : watch on/off
+        6. env: Node.js 환경변수
+        ---------------------------------------
+    4. package.json에 pm2로 실행시킬 수 있도록 변경
+        > 기존
+         "scripts": {
+            "test": "echo \"Error: no test specified\" && exit 1",
+            "start": "node app.js"
+        },
+
+        > 변경   
+        "scripts": {
+                "dev": "pm2 start ecosystem.config.js --only projectName-dev --env development",
+                "start": "pm2 start ecosystem.config.js --only projectName-pd --env production",
+                "del": "pm2 del all"
+        },
+        ---------------------------------------
+    5. 실행 주요 명령어(사용할 것만 적음.)
+        - 프로젝트 실행
+            > pm2 start [프로젝트 실행 파일]    ex)pm2 start app.js
+        - 프로젝트 리로드
+            > pm2 reload [프로젝트 실행 파일]
+        - 상태 확인
+            > pm2 status
+        - 프로세스 삭제
+            > pm2 delete [프로세스 id]
+        - 모든 프로세스 없애기
+            > pm2 kill
+
+
+* mysqldump 백업하기
+    $ mysqldump -u [사용자] -p '패스워드' [백업DB명] > [백업파일명.sql]
+* mysqldump 복원하기
+    $ mysql -u [사용자] -p '패스워드' [복원DB명] < [백업파일명.sql]

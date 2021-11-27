@@ -1,0 +1,27 @@
+{
+  "name": "lazybird",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apple-auth": "^1.0.7",
+    "cross-fetch": "^3.1.4",
+    "express": "^4.17.1",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
+    "mysql": "^2.18.1",
+    "passport": "^0.5.0",
+    "passport-local": "^1.0.0",
+    "qs": "^6.10.1",
+    "rand-token": "^1.0.1",
+    "redis": "^3.1.2",
+    "winston": "^3.3.3",
+    "xhr2": "^0.2.1"
+  }
+}
