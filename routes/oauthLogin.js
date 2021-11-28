@@ -170,6 +170,7 @@ router.post('/login/:coperation', async (req, res) => {
             console.log("apple login start!");
 
             const apple_email = jwtApple.decode(token).email;
+            //const apple_name = jwtApple.decode(token).name;
             console.log(apple_email);
 
             const apple_enc = { // JWT 생성 객체
@@ -193,9 +194,9 @@ router.post('/login/:coperation', async (req, res) => {
                             console.log('jwt 발급 완료 ::: ' + JSON.stringify(jwtToken));
                             console.log('refresh 발급 완료 ::: ' + JSON.stringify(refreshToken));
 
-                            oauthModule.IS_USER_REFRESH_TOKEN(email, comp_cd, refreshToken, function(result){
+                            oauthModule.IS_USER_REFRESH_TOKEN(email, comp_cd, refreshToken.token, function(result){
                                 if(result){
-                                    res.send({jwt: jwtToken, refreshToken: refreshToken, useYN : useYN, code : 200, msg : '애플 로그인 성공하였습니다.'}); // use_YN은 성향분석 여부이나 기존유저, 신규유저 확인용으로도 쓰임
+                                    res.send({jwt: jwtToken, refreshToken: refreshToken.token, useYN : useYN, code : 200, msg : '애플 로그인 성공하였습니다.'}); // use_YN은 성향분석 여부이나 기존유저, 신규유저 확인용으로도 쓰임
                                 }
                                 else{
                                     res.send('error');
