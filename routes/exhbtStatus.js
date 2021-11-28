@@ -35,19 +35,19 @@ router.post('/likeSave', async(req, res) => {
                 // 찜한 전시 저장
                 exhbtStatusModule.IS_LIKE_EXHBT_SAVE(user_email, comp_cd, exhbt_cd, like_yn, function(result) {
                     if(result) {
-                        res.send({msg: 'like exhibit - insertSuccess'});
+                        res.send({code : 200, msg: '찜한 전시에 대한 저장을 성공하였습니다.'});
                     }
                     else {
-                        res.send({msg: 'like exhibit - insertFail'});
+                        res.send({code : 400, msg: '찜한 전시에 대한 저장을 실패하였습니다.'});
                     } 
                 });
             } else {
-                res.send({ msg: '로그인 상태 확인해주세요.'})
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send('error ::: ' + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -76,19 +76,19 @@ router.post('/likeDel', async(req, res) => {
                 // 찜한 전시 삭제
                 exhbtStatusModule.IS_LIKE_EXHBT_DELETE(user_email, comp_cd, exhbt_cd, function(result) {
                     if(result) {
-                        res.send({msg: 'like exhibit - deleteSuccess'});
+                        res.send({code : 200, msg: '찜한 전시에 대한 삭제를 성공하였습니다.'});
                     }
                     else {
-                        res.send({msg: 'like exhibit - deleteFail'});
+                        res.send({code : 400, msg: '찜한 전시에 대한 삭제를 실패하였습니다.'});
                     } 
                 });
             } else {
-                res.send({ msg: '로그인 상태 확인해주세요.'})
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send('error ::: ' + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -116,23 +116,21 @@ router.post('/likeList', async(req, res) => {
                 // 찜한 전시 리스트 출력
                 exhbtStatusModule.IS_LIKE_EXHBT_LIST(user_email, comp_cd, function(result) {
                     if(result) {
-                        res.send({exhbtList : result});
+                        res.send({exhbtList : result, code : 200, msg : '찜한 전시 리스트를 찾았습니다.'});
                     }
                     else {
-                        res.send({msg: 'like exhibit - selectFail'});
+                        res.send({exhbtList : [], code : 400, msg: '찜한 전시 리스트를 찾을 수 없습니다.'});
                     } 
                 });
             } else {
-                res.send({ msg: '로그인 상태 확인해주세요.'})
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send('error ::: ' + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
-
-
 
 /* 예약 전시 저장 */
 router.post('/reservationSave', async(req, res) => {
@@ -158,20 +156,24 @@ router.post('/reservationSave', async(req, res) => {
             if(userCheck == 1) {
                 // 예약 전시 저장
                 exhbtStatusModule.IS_RESERVATION_EXHBT_SAVE(user_email, comp_cd, exhbt_cd, state_cd, function(result) {
-                    if(result) {
-                        res.send({msg: 'reservation exhibit - insertSuccess'});
+                    const check = result.find;
+                    
+                    if(result.find == 'overlap') {
+                        res.send({code : 200, msg: '해당 전시는 예약이 완료되었습니다.'});
+                    } else if(result.find == 'success') {
+                        res.send({code : 200, msg: '예약한 전시에 대한 저장을 성공하였습니다.'});
                     }
-                    else {
-                        res.send({msg: 'reservation exhibit - insertFail'});
+                    else if(result.find == 'delAndSc') {
+                        res.send({code : 400, msg: '예약한 전시에 대한 저장을 실패하였습니다.'});
                     } 
                 });
             } else {
-                res.send({ msg: '로그인 상태 확인해주세요.'})
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send('error ::: ' + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -200,19 +202,19 @@ router.post('/reservationDel', async(req, res) => {
                 // 예약 전시 삭제(=코드값 수정)
                 exhbtStatusModule.IS_RESERVATION_EXHBT_DELETE(user_email, comp_cd, exhbt_cd, state_cd, function(result) {
                     if(result) {
-                        res.send({msg: 'reservation exhibit - deleteSuccess'});
+                        res.send({code : 200, msg: '예약한 전시에 대한 삭제를 성공하였습니다.'});
                     }
                     else {
-                        res.send({msg: 'reservation exhibit - deleteFail'});
+                        res.send({code : 400, msg: '예약한 전시에 대한 삭제을 실패하였습니다.'});
                     } 
                 });
             } else {
-                res.send({ msg: '로그인 상태 확인해주세요.'})
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send('error ::: ' + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -240,19 +242,19 @@ router.post('/reservationList', async(req, res) => {
                 // 예약 전시 리스트
                 exhbtStatusModule.IS_RESERVATION_EXHBT_SELECT(user_email, comp_cd, state_cd, function(result) {
                     if(result) {
-                        res.send({exhbtList : result});
+                        res.send({exhbtList : result, code : 200, msg : '예약한 전시 리스트를 찾았습니다.'});
                     }
                     else {
-                        res.send({msg: 'reservation exhibit - selectFail'});
+                        res.send({exhbtList : [], code : 400, msg: '예약한 전시 리스트를 찾을 수 없습니다.'});
                     } 
                 });
             } else {
-                res.send({ msg: '로그인 상태 확인해주세요.'})
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send('error ::: ' + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -274,14 +276,14 @@ router.post('/userInfo', async(req, res) => {
             const userCheck = result; // 유저정보 맞는지 확인
 
             if(userCheck == 1) {
-                res.send({user_email : user_email, user_nm : user_nm, comp_cd : comp_cd});
+                res.send({user_email : user_email, user_nm : user_nm, comp_cd : comp_cd, code : 200, msg : '사용자 정보가 존재합니다.'});
             } else {
-                res.send({ msg: '로그인 상태 확인해주세요.'})
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send('error ::: ' + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 

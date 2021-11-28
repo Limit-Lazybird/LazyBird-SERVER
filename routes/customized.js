@@ -33,14 +33,19 @@ router.post('/list', async(req, res) => {
 
                 // 성향 리스트
                 customModule.IS_CUSTOM_LIST(function(result) {
-                    res.send({ customList: result });
+                    if(result) {
+                        res.send({customList: result, code : 200, msg : '성향 질문 리스트를 보냈습니다.'});
+                    } else {
+                        res.send({customList: [], code : 400, msg : '성향 질문 리스트를 보낼 수 없습니다.'});
+                    }
                 });
             } else {
-                res.send('error');
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
-    } catch (e) {
-        res.send("error");
+    }
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -96,18 +101,19 @@ router.post('/listSave', async(req, res) => {
                 // 성향 저장
                 customModule.IS_CUSTOM_SAVE(user_email, comp_cd, answer_idx, function(result) {
                     if(result) {
-                        res.send({msg: 'insertSuccess'});
+                        res.send({code : 200, msg: '사용자 성향 분석 정보를 저장하였습니다.'});
                     }
                     else {
-                        res.send({msg: 'insertFail'});
+                        res.send({code : 400, msg: '사용자 성향 분석 정보 저장을 실패하였습니다.'});
                     } 
                 });
-    
+            } else {
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send("error ::: " + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -133,19 +139,19 @@ router.post('/listDelete', async(req, res) => {
                 // 성향 삭제
                 customModule.IS_CUSTOM_DELETE(user_email, comp_cd, function(result) {
                     if(result) {
-                        res.send({msg: 'deleteSuccess'});
+                        res.send({code : 200, msg: '사용자 성향 분석 정보를 삭제하였습니다.'});
                     }
                     else {
-                        res.send({msg: 'deleteFail'});
+                        res.send({code : 400, msg: '사용자 성향 분석 정보 삭제를 실패하였습니다.'});
                     } 
                 });
             } else {
-                res.send({msg: '사용자 정보가 존재하지 않습니다.'});
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
     catch(e) {
-        res.send("error ::: " + e);
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -153,6 +159,7 @@ router.post('/listDelete', async(req, res) => {
 router.get('/image/:imgName', async(req, res) => {
     const imgName = req.params.imgName;
     const imageList = ['onb1_opt1.png', 'onb1_opt2.png', 'onb2_opt1.png', 'onb2_opt2.png'];
+
     if(imageList.includes(imgName)) {
         let filePath = './img/' + imgName;
         fs.readFile(filePath, function(err, img) {
@@ -162,7 +169,7 @@ router.get('/image/:imgName', async(req, res) => {
         });
     }
     else {
-        res.send("error");
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 

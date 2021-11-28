@@ -44,10 +44,35 @@ function IS_USER_CHECK(email, comp_cd, callback) {
     });
 }
 
+/* 리프레시 토큰 */
+function IS_USER_REFRESH_TOKEN(email, comp_cd, refresh_token, callback) {
+    console.log("************* 서비스 시작 ::: REFRESH_TOKEN_UPDATE, (oauthModule) *************");
 
+    oauthQuery.REFRESH_TOKEN_UPDATE(email, comp_cd, refresh_token, function(result) {
+        console.log("************* 서비스 종료 ::: REFRESH_TOKEN_UPDATE, (oauthModule) ************* \n\n");
+        callback(result);
+    });
+}
+
+function IS_USER_INFO(refresh_token, callback){
+    console.log("************* 서비스 시작 ::: IS_USER_INFO, (oauthModule) *************");
+    oauthQuery.USER_INFO(refresh_token, function(result){
+        callback(result);
+    });
+}
+
+function IS_USER_COUNT(refresh_token, callback){
+    console.log("************* 서비스 시작 ::: IS_USER_COUNT, (oauthModule) *************");
+    oauthQuery.USER_INFO_COUNT(refresh_token, function(result){
+        callback(result);
+    });
+}
 
 module.exports = {
     IS_NEWUSER : IS_NEWUSER,
     IS_USE_YN : IS_USE_YN,
-    IS_USER_CHECK : IS_USER_CHECK
+    IS_USER_CHECK : IS_USER_CHECK,
+    IS_USER_REFRESH_TOKEN : IS_USER_REFRESH_TOKEN,
+    IS_USER_INFO : IS_USER_INFO,
+    IS_USER_COUNT : IS_USER_COUNT
 }

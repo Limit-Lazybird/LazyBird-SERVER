@@ -15,7 +15,7 @@ module.exports = {
         let result;
         
         try {
-            if(user.name != undefined && user.email != undefined && user.comp_cd != undefined) {
+            if(user.name != undefined && user.email != undefined && user.comp_cd != undefined && user.comp_cd != '04') {
                 result = {
                     code: 200,
                     msg: 'accessToken 발급되었습니다.',
@@ -23,7 +23,17 @@ module.exports = {
                     token: jwt.sign(user, key.secretKey, key.access)
                     // refreshToken: randToken.uid(256)
                 };
-            } else {
+            }
+            else if(user.name != undefined && user.email != undefined && user.comp_cd == '04'){
+                result = {
+                    code: 200,
+                    msg: 'refreshToken 발급되었습니다.',
+                    //sign메소드를 통해 access token 발급!
+                    token: jwt.sign(user, key.secretKey, key.refresh)
+                    // refreshToken: randToken.uid(256)
+                };
+            }
+            else {
                 result = {
                     code: 404,
                     message: '사용자 정보를 찾을 수 없습니다.'

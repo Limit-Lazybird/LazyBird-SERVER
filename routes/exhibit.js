@@ -31,12 +31,19 @@ router.post('/list', async(req, res) => {
             if(userCheck == 1) {
                 // 전시 리스트
                 exhibitModule.IS_EXHIBIT_LIST(user_email, comp_cd, function(result) {
-                    res.send({ exhbtList : result });
+                    if(result) {
+                        res.send({exhbtList : result, code : 200, msg : '얼리 전시 리스트를 찾았습니다.'});
+                    } else {
+                        res.send({exhbtList : [], code : 400, msg : '얼리 전시 리스트를 찾을 수 없습니다.'});
+                    }
                 });
+            } else {
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
-    } catch (e) {
-        res.send('error');
+    }
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -58,12 +65,19 @@ router.post('/earlyList', async(req, res) => {
             if(userCheck == 1) {
                 // 얼리 전시 리스트 출력
                 exhibitModule.IS_EXHIBIT_EARLY_LIST(user_email, comp_cd, function(result) {
-                    res.send({ exhbtList : result });
+                    if(result) {
+                        res.send({exhbtList : result, code : 200, msg : '얼리 전시 리스트를 찾았습니다.'});
+                    } else {
+                        res.send({exhbtList : [], code : 400, msg : '얼리 전시 리스트를 찾을 수 없습니다.'});
+                    }
                 });
+            } else {
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
-    } catch (e) {
-        res.send('error');
+    }
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -92,13 +106,20 @@ router.post('/customList', async(req, res) => {
 
                     // 사용자 맞춤 전시 리스트 출력
                     exhibitModule.IS_EXHIBIT_CUSTOM_LIST(customList, user_email, comp_cd, function(result) {
-                        res.send({exhbtList : result});
+                        if(result) {
+                            res.send({exhbtList : result, code : 200, msg : '사용자 맞춤 전시리스트를 찾았습니다.'});
+                        } else {
+                            res.send({exhbtList : [], code : 400, msg : '사용자 맞춤 전시리스트를 찾을 수 없습니다.'});
+                        }
                     });
                 }) 
+            } else {
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
-    } catch (e) {
-        res.send('error');
+    }
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -130,10 +151,13 @@ router.post('/customList', async(req, res) => {
                         res.send(result);
                     }
                 });
+            } else {
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
-    } catch (e) {
-        res.send('error');
+    }
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });*/
 
@@ -158,17 +182,18 @@ router.post('/detailList', async(req, res) => {
             if(userCheck == 1) {
                 exhibitModule.IS_EXHIBIT_DETAIL_LIST(detailList, user_email, comp_cd, function(result) {
                     if(result.length > 0) {
-                        res.send({exhbtList : result});
+                        res.send({exhbtList : result, code : 200, msg : '선택한 상세 정보 전시 리스트를 찾았습니다.'});
                     } else {
-                        res.send({msg : '조건에 맞는 전시를 찾을 수 없습니다.'});
+                        res.send({exhbtList : [], code : 400, msg : '선택한 상세 정보 전시 리스트를 찾을 수 없습니다.'});
                     }
                 });
             } else {
-                res.send({msg : '사용자 정보를 확인해주세요.'});
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
-    } catch (e) {
-        res.send('error');
+    }
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -191,22 +216,25 @@ router.post('/searchList', async(req, res) => {
 
             if(userCheck == 1) {
                 if(words.trim().length < 1) {
-                    res.send({exhbtList : [], msg : '단어를 입력해주세요.'});
+                    res.send({exhbtList : [], code : 500, msg : '단어를 입력하시기 바랍니다.'});
                 }
                 else {
                     exhibitModule.IS_EXHIBIT_SEARCH_LIST(words, user_email, comp_cd, function(result) {
                         if(result.length < 1) {
-                            res.send({exhbtList : [], msg : '조건에 맞는 전시를 찾을 수 없습니다.'});
+                            res.send({exhbtList : [], code : 400, msg : '조건에 맞는 전시 리스트를 찾을 수 없습니다.'});
                         }
                         else {
-                            res.send({exhbtList : result, msg : 'success'});
+                            res.send({exhbtList : result, code : 200, msg : '조건에 맞는 전시 리스트를 찾았습니다.'});
                         }
                     });
                 }
+            } else {
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
-    } catch (e) {
-        res.send('error');
+    }
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -227,16 +255,20 @@ router.post('/wordList', async(req, res) => {
             const userCheck = result; // 유저정보 맞는지 확인
 
             if(userCheck == 1) {
-                exhibitModule.IS_EXHIBIT_RECENT_SELCET(user_email, comp_cd, function(results){
-                    res.send({rct_sc_log : results});
+                exhibitModule.IS_EXHIBIT_RECENT_SELCET(user_email, comp_cd, function(results) {
+                    if(results) {
+                        res.send({rct_sc_log : results, code : 200, msg : '최근검색어에 대한 리스트를 조회하였습니다.'});
+                    } else {
+                        res.send({rct_sc_log : [], code : 400, msg : '최근검색어에 대한 리스트를 조회하지 못했습니다.'});
+                    }
                 });
             } else {
-                res.send({msg : '사용자 정보를 확인해주세요.'});
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send('error ::: ' + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
@@ -259,24 +291,26 @@ router.post('/wordDel', async(req, res) => {
 
             if(userCheck == 1) {
                 exhibitModule.IS_EXHIBIT_RECENT_DELETE(user_email, comp_cd, selectWords, function(results){
-                    if(result){
-                        res.send({code : 200, msg : 'deleteSuccess'});
+                    if(result) {
+                        res.send({code : 200, msg : '최근 검색어에서 제일 오래된 검색어가 삭제되었습니다.'});
                     }
-                    else{
-                        res.send({code : 400, msg : 'deleteFail'});
+                    else {
+                        res.send({code : 400, msg : '최근 검색어에서 제일 오래된 검색어가 삭제되지 않았습니다.'});
                     }
                 });
+            } else {
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send('error ::: ' + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 
 /* 최근검색어 추가 */
 router.post('/wordSave', async(req, res) => {
-    try{
+    try {
         const body = req.body; // 질문 답변 받음
         const token = body.token;
         const newWord = body.selectWords;
@@ -292,20 +326,21 @@ router.post('/wordSave', async(req, res) => {
             const userCheck = result; // 유저정보 맞는지 확인
 
             if(userCheck == 1) {
-                exhibitModule.IS_EXHIBIT_RECENT_INSERT(user_email, comp_cd, newWord, function(result){
-                    if(result){
-                        res.send({code : 200, msg : 'insertSuccess'});
+                exhibitModule.IS_EXHIBIT_RECENT_INSERT(user_email, comp_cd, newWord, function(result) {
+                    if(result) {
+                        res.send({code : 200, msg : '최근 검색어에 해당 단어가 추가되었습니다.'});
                     }
-                    else{
-                        res.send({code : 400, msg : 'insertFail'});
+                    else {
+                        res.send({code : 400, msg : '최근 검색어에 해당 단어가 추가되지 않았습니다.'});
                     }
                 });
-    
+            } else {
+                res.send({code : 100, msg : '로그인이 제대로 이루어지지 않았습니다.'});
             }
         });
     }
-    catch(e){
-        res.send('error ::: ' + e);
+    catch(e) {
+        res.send({code : 300, msg : '실행할 수 없는 상태입니다.'});
     }
 });
 

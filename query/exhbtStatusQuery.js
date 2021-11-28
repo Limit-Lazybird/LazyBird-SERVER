@@ -47,7 +47,6 @@ function EXHBT_STATUS_LIKE_LIST(user_email, comp_cd, callback) {
     });
 }
 
-
 /* 예약 전시 저장 */
 function EXHBT_STATUS_RESERVATION_SAVE(user_email, comp_cd, exhbt_cd, state_cd, callback) {
     console.log("예약 전시 저장 ::: EXHBT_STATUS_RESERVATION_SAVE");
@@ -55,8 +54,51 @@ function EXHBT_STATUS_RESERVATION_SAVE(user_email, comp_cd, exhbt_cd, state_cd, 
 
     getConnection((conn) => {
         conn.query(sql, [user_email, comp_cd, exhbt_cd, state_cd], (err, results) => {
-            const msg = 'insertSuccess true';
-            callback(msg);
+            callback(results);
+        });
+        conn.commit();
+        conn.release();
+    });
+}
+
+/* 전시 상태값 확인 */
+function EXHBT_STATUS_RESERVATION_FIND2(user_email, comp_cd, exhbt_cd, callback) {
+    console.log("예약 전시 저장 ::: EXHBT_STATUS_RESERVATION_FIND222");
+    let sql  = 'SELECT COUNT(*) AS count FROM user_exhbt_info WHERE user_email = ? AND comp_cd = ? AND exhbt_cd = ? AND state_cd = 20';
+
+    getConnection((conn) => {
+        conn.query(sql, [user_email, comp_cd, exhbt_cd], (err, result) => {
+            console.log(result);
+            callback(result);
+        });
+        conn.commit();
+        conn.release();
+    });
+}
+
+/* 전시 상태값 확인 */
+function EXHBT_STATUS_RESERVATION_FIND(user_email, comp_cd, exhbt_cd, callback) {
+    console.log("예약 전시 저장 ::: EXHBT_STATUS_RESERVATION_FIND");
+    let sql  = 'SELECT COUNT(*) AS count FROM user_exhbt_info WHERE user_email = ? AND comp_cd = ? AND exhbt_cd = ? AND state_cd = 30';
+
+    getConnection((conn) => {
+        conn.query(sql, [user_email, comp_cd, exhbt_cd], (err, result) => {
+            console.log(result);
+            callback(result);
+        });
+        conn.commit();
+        conn.release();
+    });
+}
+
+/* 전시 상태 real 삭제 */
+function EXHBT_STATUS_RESERVATION_REAL_DEL(user_email, comp_cd, exhbt_cd, callback) {
+    console.log("예약 전시 저장 ::: EXHBT_STATUS_RESERVATION_REAL_DEL");
+    let sql  = 'DELETE FROM user_exhbt_info WHERE user_email = ? AND comp_cd = ? AND exhbt_cd = ? AND state_cd = 30';
+
+    getConnection((conn) => {
+        conn.query(sql, [user_email, comp_cd, exhbt_cd], (err, result) => {
+            callback({call : 'success'});
         });
         conn.commit();
         conn.release();
@@ -70,8 +112,7 @@ function EXHBT_STATUS_RESERVATION_DELETE(user_email, comp_cd, exhbt_cd, state_cd
     
     getConnection((conn) => {
         conn.query(sql, [user_email, comp_cd, exhbt_cd, state_cd], (err, results) => {
-            const msg = 'updateSuccess true';
-            callback(msg);
+            callback(results);
         });
         conn.commit();
         conn.release();
@@ -99,6 +140,9 @@ module.exports = {
     EXHBT_STATUS_LIKE_DELETE : EXHBT_STATUS_LIKE_DELETE,
     EXHBT_STATUS_LIKE_LIST : EXHBT_STATUS_LIKE_LIST,
     EXHBT_STATUS_RESERVATION_SAVE : EXHBT_STATUS_RESERVATION_SAVE,
+    EXHBT_STATUS_RESERVATION_FIND2 : EXHBT_STATUS_RESERVATION_FIND2,
+    EXHBT_STATUS_RESERVATION_FIND : EXHBT_STATUS_RESERVATION_FIND,
+    EXHBT_STATUS_RESERVATION_REAL_DEL : EXHBT_STATUS_RESERVATION_REAL_DEL,
     EXHBT_STATUS_RESERVATION_DELETE : EXHBT_STATUS_RESERVATION_DELETE,
     EXHBT_STATUS_RESERVATION_SELECT : EXHBT_STATUS_RESERVATION_SELECT
 }

@@ -74,11 +74,11 @@ function IS_EXHIBIT_RECENT_SELCET(user_email, comp_cd, callback) {
     });
 }
 
-/*  최근검색어 삭제* */
-function IS_EXHIBIT_RECENT_DELETE(user_email, comp_cd, selectWord,callback) {
+/*  최근검색어 삭제 */
+function IS_EXHIBIT_RECENT_DELETE(user_email, comp_cd, selectWord, callback) {
     console.log("서비스 시작 ::: IS_EXHIBIT_RECENT_DELETE");
 
-    exhibitQuery.RECENT_USER_WORDS_DELETE(user_email, comp_cd, selectWord,function(result) {
+    exhibitQuery.RECENT_USER_WORDS_DELETE(user_email, comp_cd, selectWord, function(result) {
         let deleteSuccess = false;
 
         if(result) {
